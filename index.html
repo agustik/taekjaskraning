@@ -131,8 +131,8 @@
 	    }
 	  }).on("select2-selecting", function(e) {
 	  	if(e.val == 9999) {
-	  		console.log('Creating driver ..', e);
-	  		$("#driver").select2("val", "");
+	  		console.log('Creating driver ..',this, e);
+	  		$('#driver').select2('val', '');
 	  	}
 	  });
 
