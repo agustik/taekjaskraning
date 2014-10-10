@@ -4,19 +4,12 @@ var favicon = require('static-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var mysql = require('mysql');
+
 
 var routes = require('./routes/index');
 var app = express();
 
-
-connectionpool = mysql.createPool({
-        host     : 'slxhutdev1.lsh.is',
-        user     : 'taekjaskraning',
-        password : '7sJU5JP2YFxNR5Su',
-        database : 'taekjaskraning'
-    });
-
+ 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
