@@ -3,7 +3,10 @@ var router = express.Router();
 var mysql = require('mysql');
 var utf8 = require('utf8');
 var config = require('../config.json');
+var io = require('socket.io');
 connectionpool = mysql.createPool(config.mysql);
+
+
 
 /* GET home page. */
 router.get('/api', function (req, res) {
@@ -59,11 +62,15 @@ router.get('/api/:action', function (req, res) {
                         status: 'fail',
                         message:    err.code
                     });
+                }else{
+                  console.log('insert id:',res.insertId);
+                  res.send({
+                      status: 'success',
+                      data: rows
+                  });
+                  
                 }
-                res.send({
-                    status: 'success',
-                    data: rows
-                });
+
                 connection.release();
             });
         }
@@ -78,6 +85,8 @@ router.post('/api/:action/:id', function (req, res) {
 });
 
 router.put('/api/:action', function (req, res) {
+
+  io.emit('activity', req.params.action);
 	var query = "";
 	
 	var data = {};

@@ -65,10 +65,10 @@
               </ui-select-choices>
             </ui-select>
             <span class="input-group-btn">
-              <button ng-click="drivers.selected = undefined" class="btn btn-default">
+              <button type="button" ng-click="selected.driver = undefined" class="btn btn-default">
                 <span class="glyphicon glyphicon-trash"></span>
               </button>
-              <button class="btn btn-default" ng-click="openmodal('lg')">
+              <button type="button" class="btn btn-default" ng-click="openmodal('lg')">
                 <span >Stofna notanda</span>
               </button>
             </span>
@@ -137,29 +137,23 @@
 		</form>
 	  </div>
 	  <div class="col-md-6 ">
-	  	<angular-refresh 
-	    	url="api/activity"
-	      	ng-model="d"
-	      	interval="1000"
-	      	method="json">
-		</angular-refresh>
 	  	<div class="panel panel-primary">
 		  <div class="panel-heading">
 		    <h3 class="panel-title">Notkun</h3>
 		  </div>
 		  <div class="panel-body" id="mainbody">
-    	  	<div class="panel" ng-class="{true : 'panel-primary', false:'panel-danger'}[log.state == 'Í lagi']" role="alert" ng-repeat="log in data">
+    	  	<div class="panel" ng-class="{true : 'panel-primary', false:'panel-danger'}[log.state == 'Í lagi']" role="alert" ng-repeat="log in activity | orderBy:predicate:reverse">
     	  		<div class="panel-heading">
 		        	<h3 class="panel-title">{{ log.taeki }}</h3>
 		      </div>
 		      <div class="panel-body">
 		      	<p>
-		      		Olía: {{ log.oil }}
+		      		<strong>Olía:</strong> {{ log.oil }}
 		      	</p>
 		      	<p>
-		      		Km eknir: {{ log.km }}
+		      		<strong>Km eknir:</strong> {{ log.km }}
 		      	</p>
-				Athugasemnd: {{ log.ath }}	
+				<strong>Athugasemnd:</strong> {{ log.ath }}	
 		  		
 		      </div>
 		      <div class="panel-footer"><p class="text-right"> {{ log.driver }} {{ log.date | date:"MM.dd.yyyy"}} </p></div>
@@ -173,35 +167,17 @@
 	</div>
 </div>
 
-
+<script src="js/socket.io-1.1.0.js"></script>
 <script src="js/angular.min.js"></script>
 <script src="js/angular-sanitize.min.js"></script>
 <script src="js/select.min.js"></script>
 <script src="js/angular-refresh.js"></script>
 <script src="js/ui-bootstrap-tpls-0.11.2.min.js"></script>
-
+<script src="https://cdn.socket.io/socket.io-1.1.0.js"></script>
 <script src="js/application.js"></script>
 <script type="text/javascript">
-
-   //     $("#driver").select2({
-	      
-	  //     tokenSeparators: [",", " "],
-	  //     ajax: { // instead of writing the function to execute the request we use Select2's convenient helper
-	  //       url: "json.json",
-	  //       dataType: 'json',
-	  //       cache : false,
-	  //       results: function (data, page) { // parse the results into the format expected by Select2.
-	  //           return {results : data };
-	  //       }
-	  //   }
-	  // }).on("select2-selecting", function(e) {
-	  // 	if(e.val == 9999) {
-	  // 		console.log('Creating driver ..',this, e);
-	  // 		$(this).select2('val', '');
-	  // 	}
-	  // });
-
-       
+	
+	       
 </script>
 </body>
 </html>

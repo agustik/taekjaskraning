@@ -1,12 +1,19 @@
 var application = angular.module('taekjaskraning', ['ngSanitize', 'ui.bootstrap','ui.select']);
 
+var io = io();
+
+// Emit ready event.
+// io.emit('activity','mjeeee'); 
+
+// // Listen for the talk event.
+// io.on('activity', function(data) {
+//     console.log(data)
+// });
+
 
 application.controller('main', function ($scope, request, $modal, $log, $interval) {
 
-  
-
-  $scope.items = ['item1', 'item2', 'item3'];
-
+  $scope.selected = {};
   $scope.openmodal = function (size) {
   	console.log('open  ?');
 
@@ -22,15 +29,17 @@ application.controller('main', function ($scope, request, $modal, $log, $interva
     });
 
     modalInstance.result.then(function (name) {
-      request.get('drivers').then(function (res) {
-        $scope.drivers = res.data;
-      });
+      // request.get('drivers').then(function (res) {
+      //   $scope.drivers = res.data;
+      // });
+      console.log(name);
+      $scope.selected.driver = name;
       
     }, function () {
       $log.info('Modal dismissed at: ' + new Date());
     });
   };
-	$scope.selected = {};
+	
 	$scope.selected.passangers = 0;
 	$scope.logs = [];
 
@@ -53,31 +62,27 @@ application.controller('main', function ($scope, request, $modal, $log, $interva
 		$scope.selected.state = res.data[0];
 	});
 
-  var arr;
-  $scope.data=[];
-  function FetchActivity(){
-    request.get('activity').then(function (res) {
-      arr = res.data;
-      angular.forEach(arr, function (value, key){
-        if($scope.data.length == 0 && arr.length > 0 ){
-          $scope.data = arr;
-        } 
-        
-        angular.forEach($scope.data, function (a,b){
-          console.log(value.id, a.id);
-          if(value.id == a.id){
-            console.log('::::::::::::::::::::::::::::::::::::true ? ');
-            return;
-          }else{
-            console.log('false ? ');          }
-        });
-      });
-    });
-  }
+  request.get('activity').then(function (res) {
+    $scope.activity=res.data;
+  });
 
-  FetchActivity();
+  io.on('update', function(ws) {
+    console.log(ws);
+    request.get(ws.name+'/'+ws.row_id).then(function (res){
+      console.log(res);
+      if(res.status=='success'){
+        $scope[ws.name].push(res.data[0]);
+      }
+    })
+    
+    //$scope.data.push(data.data);
+  });
 
-  $interval(FetchActivity, 5000);
+  io.on('select', function(data) {
+    console.log(data)
+  });
+  $scope.predicate = 'id';
+  $scope.reverse = true;
 
 	$scope.today = function() {
 	    $scope.dt = new Date();
@@ -92,6 +97,7 @@ application.controller('main', function ($scope, request, $modal, $log, $interva
 
 	  $scope.format = "dd.MM.yyyy";
 	  $scope.submit = function (){
+      console.log('submit ? ');
 	  	$scope.selected.date = Date.parse($scope.dt) / 1000;
 	  	request.put('activity', $scope.selected);
 	  }
@@ -146,9 +152,12 @@ application.service('request', function ($http, $q){
 application.controller('ModalInstanceCtrl', function (request, $scope, $modalInstance) {
 
   $scope.save = function (){
-  	request.put('drivers', {name : $scope.NewDriver }).then(function (res){
-      	console.log(res);
+    if($scope.NewDriver !== ""){
+    	request.put('drivers', {name : $scope.NewDriver }).then(function (res){
+        	console.log(res);
       });
+      
+    }
   }
   $scope.ok = function () {
     $modalInstance.close($scope.NewDriver);
