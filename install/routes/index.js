@@ -24,7 +24,7 @@ router.get('/api/:action', function (req, res) {
   		break;
 		case 'activity':
   			table = "activity";
-  			query = "SELECT a.oil, a.date AS date, n.name AS notkun, a.ath, a.timestamp,  d.name AS driver,  s.name AS state, t.name AS taeki, a.km FROM activity a LEFT JOIN notkun n ON a.notkun = n.id LEFT JOIN drivers d ON a.driver = d.id LEFT JOIN state s ON a.state = s.id LEFT JOIN taeki t ON a.taeki = t.id ORDER BY a.timestamp DESC LIMIT 100";
+  			query = "SELECT a.id, a.oil, a.date AS date, n.name AS notkun, a.ath, a.timestamp,  d.name AS driver,  s.name AS state, t.name AS taeki, a.km FROM activity a LEFT JOIN notkun n ON a.notkun = n.id LEFT JOIN drivers d ON a.driver = d.id LEFT JOIN state s ON a.state = s.id LEFT JOIN taeki t ON a.taeki = t.id ORDER BY a.timestamp DESC LIMIT 100";
 
   		break;
 		case 'notkun':

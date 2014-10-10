@@ -1,7 +1,7 @@
-var application = angular.module('taekjaskraning', ['ngSanitize', 'ui.bootstrap','ui.select','datarefresh']);
+var application = angular.module('taekjaskraning', ['ngSanitize', 'ui.bootstrap','ui.select']);
 
 
-application.controller('main', function ($scope, request, $modal, $log) {
+application.controller('main', function ($scope, request, $modal, $log, $interval) {
 
   
 
@@ -52,6 +52,32 @@ application.controller('main', function ($scope, request, $modal, $log) {
 		$scope.state = res.data;
 		$scope.selected.state = res.data[0];
 	});
+
+  var arr;
+  $scope.data=[];
+  function FetchActivity(){
+    request.get('activity').then(function (res) {
+      arr = res.data;
+      angular.forEach(arr, function (value, key){
+        if($scope.data.length == 0 && arr.length > 0 ){
+          $scope.data = arr;
+        } 
+        
+        angular.forEach($scope.data, function (a,b){
+          console.log(value.id, a.id);
+          if(value.id == a.id){
+            console.log('::::::::::::::::::::::::::::::::::::true ? ');
+            return;
+          }else{
+            console.log('false ? ');          }
+        });
+      });
+    });
+  }
+
+  FetchActivity();
+
+  $interval(FetchActivity, 5000);
 
 	$scope.today = function() {
 	    $scope.dt = new Date();
