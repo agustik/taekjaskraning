@@ -2,12 +2,14 @@
     <h3 class="modal-title">Header</h3>
 </div>
 <div class="modal-body">
-	<div class="input-group">
-    	<input ng-model="NewDriver"  class="form-control" required>
-    		<span class="input-group-btn"  >
-        <button class="btn btn-default" ng-click="save()" type="button">Go!</button>
-      </span>
-	</div>
+	<form ng-submit="save()">
+		<div class="input-group">
+	    	<input ng-model="NewDriver"  class="form-control" required>
+	    		<span class="input-group-btn">
+	        <button class="btn btn-default" ng-click="save()" type="button">Stofna</button>
+	      </span>
+		</div>
+	</form>
 </div>
 <div class="modal-footer">
     <button class="btn btn-warning" ng-click="cancel()">Loka</button>

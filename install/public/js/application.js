@@ -95,12 +95,12 @@ application.controller('main', function ($scope, request, $modal, $log, $interva
 	    $scope.opened = true;
 	  };
 
-	  $scope.format = "dd.MM.yyyy";
-	  $scope.submit = function (){
-      console.log('submit ? ');
-	  	$scope.selected.date = Date.parse($scope.dt) / 1000;
-	  	request.put('activity', $scope.selected);
-	  }
+  $scope.format = "dd.MM.yyyy";
+  $scope.submit = function (){
+    console.log('submit ? ');
+  	$scope.selected.date = Date.parse($scope.dt) / 1000;
+  	request.put('activity', $scope.selected);
+  }
 });
 
 application.service('request', function ($http, $q){
@@ -155,6 +155,9 @@ application.controller('ModalInstanceCtrl', function (request, $scope, $modalIns
     if($scope.NewDriver !== ""){
     	request.put('drivers', {name : $scope.NewDriver }).then(function (res){
         	console.log(res);
+         if (res.status=="success"){
+          $scope.NewDriver ="";
+         }
       });
       
     }

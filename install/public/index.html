@@ -89,7 +89,7 @@
 		  <div class="form-group">
 		    <label for="notkun" class="col-sm-4 control-label">Notkunarflokkur</label>
 		    <div class="col-sm-8">
-		      <select id="notkun"  class="form-control" ng-model="selected.notkun" ng-options="item.name for item in notkun">
+		      <select id="notkun"  class="form-control" ng-model="selected.notkun" ng-options="item.name for item in notkun | orderBy:'name':false">
 		      </select>
 		    </div>
 		  </div>
