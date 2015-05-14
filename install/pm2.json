@@ -1,0 +1,7 @@
+[{
+  "name"      : "taekjaskranin",
+  "script"    : "./app.js",
+  "env": {
+        "NODE_ENV": "production"
+    }
+}]
