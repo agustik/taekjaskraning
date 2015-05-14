@@ -9,80 +9,118 @@ var io = io();
 // io.on('activity', function(data) {
 //     console.log(data)
 // });
+application.filter('propsFilter', function() {
+  return function(items, props) {
+    var out = [];
 
+    if (angular.isArray(items)) {
+      items.forEach(function(item) {
+        var itemMatches = false;
+
+        var keys = Object.keys(props);
+        for (var i = 0; i < keys.length; i++) {
+          var prop = keys[i];
+          var text = props[prop].toLowerCase();
+          if (item[prop].toString().toLowerCase().indexOf(text) !== -1) {
+            itemMatches = true;
+            break;
+          }
+        }
+
+        if (itemMatches) {
+          out.push(item);
+        }
+      });
+    } else {
+      // Let the output be the input untouched
+      out = items;
+    }
+
+    return out;
+  };
+});
 
 application.controller('main', function ($scope, request, $modal, $log, $interval) {
 
   $scope.selected = {};
-  $scope.openmodal = function (size) {
-  	console.log('open  ?');
-
+  $scope.openmodal = function (size,  template, controller, index) {
+    if( typeof index == 'string'){
+      console.log('STRENGUR??????');
+    }
     var modalInstance = $modal.open({
-      templateUrl: 'modals/create-user.html',
-      controller: 'ModalInstanceCtrl',
+      templateUrl: 'modals/'+template,
+      controller: controller,
       size: size,
-      resolve: {
-        items: function () {
-          return $scope.items;
+      resolve : {
+        log : function (){
+          return {
+            data : $scope.activity,
+            index : index
+          } 
+            
         }
       }
     });
 
     modalInstance.result.then(function (name) {
-      // request.get('drivers').then(function (res) {
-      //   $scope.drivers = res.data;
-      // });
-      console.log(name);
       $scope.selected.driver = name;
       
-    }, function () {
-      $log.info('Modal dismissed at: ' + new Date());
+    }, function (name) {
+      $log.info('Modal dismissed at: ' + new Date(), name);
+      if(index == 'driver'){
+        $scope.selected.driver = name;
+      }
     });
   };
 	
 	$scope.selected.passangers = 0;
 	$scope.logs = [];
+  $scope.taeki = [];
+  $scope.notkun = [];
+  $scope.drivers=[];
+  $scope.state=[];
+  $scope.activity=[];
+  $scope.AvailableUsers=[];
+  var requests = ['taeki', 'notkun', 'drivers', 'state', 'activity'];
 
-	request.get('taeki').then(function (res) {
-		$scope.taeki = res.data;
-		$scope.selected.taeki = res.data[0];
-	});
-
-	request.get('notkun').then(function (res) {
-		$scope.notkun = res.data;
-		$scope.selected.notkun = res.data[0];
-	});
-
-	request.get('drivers').then(function (res) {
-		$scope.drivers = res.data;
-	});
-
-	request.get('state').then(function (res) {
-		$scope.state = res.data;
-		$scope.selected.state = res.data[0];
-	});
-
-  request.get('activity').then(function (res) {
-    $scope.activity=res.data;
+  requests.forEach(function (key){
+    request.get(key).then(function (res) {
+      if(res.status=='success'){
+        $scope[key] = res.data;
+        $scope.selected[key] = res.data[0];
+      }else{
+        $log.error(res.message);
+      }
+    });
   });
 
+  $scope.$watch('drivers', function (NewValue, OldValue){
+    $scope.AvailableUsers=NewValue;
+  });
+
+  /* Websocket Stuff */
   io.on('update', function(ws) {
-    console.log(ws);
     request.get(ws.name+'/'+ws.row_id).then(function (res){
-      console.log(res);
       if(res.status=='success'){
         $scope[ws.name].push(res.data[0]);
       }
     })
-    
-    //$scope.data.push(data.data);
   });
 
-  io.on('select', function(data) {
-    console.log(data)
+  io.on('delete', function(data) {
+    DeleteObjectFromScopeById(data.name, data.id);
   });
   $scope.predicate = 'id';
   $scope.reverse = true;
+
+  function DeleteObjectFromScopeById(ScopeKey, id){
+    var array = $scope[ScopeKey];
+    array.forEach(function (value, key){
+      if(value.id == id ){
+        $scope[ScopeKey].splice(0,1);
+      }
+    });
+  }
 
 	$scope.today = function() {
 	    $scope.dt = new Date();
@@ -100,7 +138,18 @@ application.controller('main', function ($scope, request, $modal, $log, $interva
     console.log('submit ? ');
   	$scope.selected.date = Date.parse($scope.dt) / 1000;
   	request.put('activity', $scope.selected);
-  }
+  };
+
+  $scope.delete = function (collection, id){
+    if (confirm('viltu eyða?')) {
+      request.delete(collection, id).then(function (res){
+        $log.info(res);
+      });
+    }
+  };
+
+  /* Multi user select*/
+  $scope.selected.selectedPassengers = {};
 });
 
 application.service('request', function ($http, $q){
@@ -110,9 +159,10 @@ application.service('request', function ($http, $q){
  
         $http.get('api/'+collection).success(function(data){
           deferred.resolve(data);
-      	}).error(function(){
+      	}).error(function(data){
  
-        deferred.reject("An error occured while fetching items");
+        //deferred.reject("An error occured while fetching items");
+        deferred.resolve(data);
       });
  		//console.log(deferred.promise);
       return deferred.promise;
@@ -122,25 +172,38 @@ application.service('request', function ($http, $q){
  
         $http.post('api/'+collection, post).success(function(data){
           deferred.resolve(data);
-      	}).error(function(){
- 
-        deferred.reject("An error occured while fetching items");
+      	}).error(function(data){
+          
+        //deferred.reject("An error occured while fetching items");
+        deferred.resolve(data);
       });
  		//console.log(deferred.promise);
       return deferred.promise;
     },
     put: function(collection, put){
-
-    	console.log(put);
         var deferred = $q.defer();
  
         $http.put('api/'+collection, put).success(function(data){
           deferred.resolve(data);
-      	}).error(function(){
+      	}).error(function(data){
  
-        deferred.reject("An error occured while fetching items");
+        //deferred.reject("An error occured while fetching items");
+        deferred.resolve(data);
       });
  		//console.log(deferred.promise);
+      return deferred.promise;
+    },
+    delete: function(collection, del){
+        var deferred = $q.defer();
+ 
+        $http.delete('api/'+collection+'/'+del).success(function(data){
+          deferred.resolve(data);
+        }).error(function(data){
+ 
+        //deferred.reject("An error occured while fetching items");
+        deferred.resolve(data);
+      });
+    //console.log(deferred.promise);
       return deferred.promise;
     }
   };
@@ -149,28 +212,47 @@ application.service('request', function ($http, $q){
 // Please note that $modalInstance represents a modal window (instance) dependency.
 // It is not the same as the $modal service used above.
 
-application.controller('ModalInstanceCtrl', function (request, $scope, $modalInstance) {
-
+application.controller('DriverModalController', function (log, request, $scope, $modalInstance) {
+  $scope.selectedDriver='';
+  $scope.show=false;
+  $scope.status="";
+  $scope.statusClass='alert-error';
   $scope.save = function (){
-    if($scope.NewDriver !== ""){
-    	request.put('drivers', {name : $scope.NewDriver }).then(function (res){
-        	console.log(res);
+    console.log($scope.NewDriver);
+    if($scope.NewDriver !== undefined){
+      $scope.selectedDriver=$scope.NewDriver;
+      request.put('drivers', {name : $scope.NewDriver }).then(function (res){
          if (res.status=="success"){
           $scope.NewDriver ="";
+          $scope.show=true;
+          $scope.statusClass='alert-success';
+          $scope.status='Aðgerð heppnaðist';
+         }else{
+          $scope.statusClass='alert-danger';
+          $scope.show=true;
+          $scope.status=res.message;
          }
       });
       
+    }else{
+      $scope.statusClass='alert-danger';
+          $scope.show=true;
+          $scope.status="Notandanafn vantar";
     }
   }
   $scope.ok = function () {
-    $modalInstance.close($scope.NewDriver);
-  };
-
-  $scope.cancel = function () {
-    $modalInstance.dismiss('cancel');
+    $modalInstance.close($scope.selectedDriver);
   };
 });
 
+application.controller('LogModalController', function (log, request, $scope, $modalInstance) {
+  console.log(log);
+  $scope.data = log.data[log.index];
+  $scope.data.consuption = ($scope.data.oil / $scope.data.km).toFixed(2);
+  $scope.ok = function () {
+    $modalInstance.close();
+  };
+});
 
 application.directive('onlyDigits', function () {
     return {

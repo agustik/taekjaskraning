@@ -11,7 +11,7 @@
 
 <title>
   
-    Getting started · Bootstrap
+    Skráning
   
 </title>
 
@@ -32,6 +32,7 @@
 		overflow-y: scroll;
 	}
 </style>
+
 <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
 <!--[if lt IE 9]>
   <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
@@ -68,7 +69,7 @@
               <button type="button" ng-click="selected.driver = undefined" class="btn btn-default">
                 <span class="glyphicon glyphicon-trash"></span>
               </button>
-              <button type="button" class="btn btn-default" ng-click="openmodal('lg')">
+              <button type="button" class="btn btn-default" ng-click="openmodal('lg', 'create-user.html', 'DriverModalController', 'driver')">
                 <span >Stofna notanda</span>
               </button>
             </span>
@@ -106,7 +107,7 @@
 		      <input type="text" ng-model="selected.oil" class="form-control" id="" placeholder="Olíumagn" required only-digits>
 		    </div>
 		  </div>
-		  <div class="form-group">
+		  <!--<div class="form-group">
 		    <label for="" class="col-sm-4 control-label">Fjöldi farþega</label>
 		    <div class="col-sm-8">
 		    	<div class="input-group">
@@ -115,6 +116,25 @@
 		      		 <span class="input-group-addon">{{ selected.passangers }}</span>
 		    	</div>
 		    </div>
+		  </div>-->
+		  <div class="form-group">
+
+		  	<label for="" class="col-sm-4 control-label">Björgunarmenn</label>
+		  	<div class="col-sm-8">
+		  		<div class="input-group">
+			  	<ui-select multiple ng-model="selected.selectedPassengers" theme="bootstrap" ng-disabled="disabled" >
+				    <ui-select-match placeholder="Veldu björgunarmenn">{{$item.name}} </ui-select-match>
+				    <ui-select-choices repeat="user in AvailableUsers | propsFilter: {name: $select.search}">
+				      <div ng-bind-html="user.name | highlight: $select.search"></div>
+				    </ui-select-choices>
+				  </ui-select>
+				  <span class="input-group-btn">
+              <button type="button" class="btn btn-default" ng-click="openmodal('lg', 'create-user.html', 'DriverModalController', 'passegers')">
+                <span >Stofna notanda</span>
+              </button>
+            </span>
+		  		</div>
+		  	</div>
 		  </div>
 		  <div class="form-group">
 		    <label for="taeki" class="col-sm-4 control-label">Staða tækis</label>
@@ -137,13 +157,20 @@
 		</form>
 	  </div>
 	  <div class="col-md-6 ">
+	  	<div>
+	  		<input class="form-control" ng-model="search" placeholder="Leit"/>
+	  	</div>
 	  	<div class="panel panel-primary">
 		  <div class="panel-heading">
 		    <h3 class="panel-title">Notkun</h3>
 		  </div>
 		  <div class="panel-body" id="mainbody">
-    	  	<div class="panel" ng-class="{true : 'panel-primary', false:'panel-danger'}[log.state == 'Í lagi']" role="alert" ng-repeat="log in activity | orderBy:predicate:reverse">
+    	  	<div class="panel" ng-class="{true : 'panel-primary', false:'panel-danger'}[log.state == 'Í lagi']" role="alert" ng-repeat="(i, log) in activity | orderBy:predicate:reverse | filter:search">
     	  		<div class="panel-heading">
+    	  			<div class="btn-group pull-right">
+				        <a href="#" class="btn btn-default btn-xs" ng-click="openmodal('lg', 'view-log.html','LogModalController', i)">Skoða</a>
+				        <a href="#" class="btn btn-danger btn-xs" ng-click="delete('activity',log.id)">Eyða</a>
+				    </div>
 		        	<h3 class="panel-title">{{ log.taeki }}</h3>
 		      </div>
 		      <div class="panel-body">
@@ -153,8 +180,13 @@
 		      	<p>
 		      		<strong>Km eknir:</strong> {{ log.km }}
 		      	</p>
-				<strong>Athugasemnd:</strong> {{ log.ath }}	
-		  		
+		  		<strong>Björgunarmenn:</strong><span ng-repeat="passenger in log.passengers">
+			  		<span class="label label-primary">{{ passenger.name }}
+			  		</span>&nbsp;
+			  	</span>
+				<p>
+					<strong>Athugasemnd:</strong> {{ log.ath }}	
+				</p>
 		      </div>
 		      <div class="panel-footer"><p class="text-right"> {{ log.driver }} {{ log.date | date:"MM.dd.yyyy"}} </p></div>
 
