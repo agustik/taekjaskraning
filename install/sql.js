@@ -8,7 +8,6 @@ module.exports = {
             console.error('CONNECTION error: ',err);
         } else {
             connection.query(query, '', function(err, rows, fields) {
-
              	connection.release();
                 callback(err, rows);
             });
@@ -24,7 +23,6 @@ module.exports = {
 		switch (command){
 			case 'activity':
 				query = "DELETE FROM activity WHERE id=" +id;
-				console.log(query);
 				_root.exec(query, callback);
 			break;
 		}

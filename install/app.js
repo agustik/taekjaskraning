@@ -25,7 +25,6 @@ http.listen(3000, function(){
 });
 
 app.get('/api/:command', function (req, res) {
-	console.log(req.params.command);
 	var response = {
 		status : 'fail'
 	};
@@ -84,21 +83,17 @@ app.delete('/api/:command/:id', function (req, res){
 	var response = {
 		status:'fail'
 	}
-	response.status='success';
-	response.data=id;
-	io.emit('delete', { name: command, id : id});
-	res.send(response);
-	// sql.delete(command, id, function (err, data){
-	// 	if (err){
-	// 		response.message = err;
-	// 	}else{
-	// 		response.status="success";
-	// 		response.data=data;
-	// 		io.emit('delete', { name: command, data : id});
+	sql.delete(command, id, function (err, data){
+		if (err){
+			response.message = err;
+		}else{
+			response.status="success";
+			response.data=data;
+			io.emit('delete', { name: command, id : id});
 
-	// 	}
-	// 	res.send(response);
-	// })
+		}
+		res.send(response);
+	})
 });
 
 

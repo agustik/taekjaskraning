@@ -44,9 +44,6 @@ application.controller('main', function ($scope, request, $modal, $log, $interva
 
   $scope.selected = {};
   $scope.openmodal = function (size,  template, controller, index) {
-    if( typeof index == 'string'){
-      console.log('STRENGUR??????');
-    }
     var modalInstance = $modal.open({
       templateUrl: 'modals/'+template,
       controller: controller,
