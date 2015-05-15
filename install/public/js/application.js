@@ -33,7 +33,7 @@ application.filter('propsFilter', function() {
   };
 });
 
-application.controller('main', function ($scope, request, $modal, $log, $interval) {
+application.controller('main', function ($scope, $filter, request, $modal, $log, $interval) {
 
   $scope.selected = {};
   $scope.openmodal = function (size,  template, controller, index) {
@@ -102,12 +102,35 @@ application.controller('main', function ($scope, request, $modal, $log, $interva
   $scope.predicate = 'id';
   $scope.reverse = true;
 
+  // $scope.$watch('selected.driver', function (NewValue, OldValue){
+  //   if(NewValue == undefined) {
+  //     return;
+  //   }
+  //   if(OldValue == undefined){
+  //     angular.copy($scope.AvailableUsers, $scope.OriginalUsers);
+  //   }else{
+  //     $scope.AvailableUsers.push(OldValue);
+  //   }
+  //   console.log(OldValue, NewValue);
+
+  //   DeleteObjectFromScopeByName('AvailableUsers', NewValue.name);
+  // });
+
   function DeleteObjectFromScopeById(ScopeKey, id){
     var array = $scope[ScopeKey];
     array.forEach(function (value, key){
       if(value.id == id ){
-        $scope[ScopeKey].splice(0,1);
+        $scope[ScopeKey].splice(key,1);
       }
+    });
+  }
+
+  function DeleteObjectFromScopeByName(ScopeKey, name){
+    var array = $scope[ScopeKey];
+    array.forEach(function (value, key){
+       if(value.name == name ){
+         $scope[ScopeKey].splice(key,1);
+       }
     });
   }
 
@@ -134,7 +157,6 @@ application.controller('main', function ($scope, request, $modal, $log, $interva
 
   $scope.format = "dd.MM.yyyy";
   $scope.submit = function (){
-    console.log('submit ? ');
   	$scope.selected.date = Date.parse($scope.dt) / 1000;
   	request.put('activity', $scope.selected).then(function (data){
       if (data.status == "success") {
@@ -144,7 +166,7 @@ application.controller('main', function ($scope, request, $modal, $log, $interva
   };
 
   $scope.delete = function (collection, id){
-    if (confirm('viltu eyða?')) {
+    if (confirm('Ertu viss um að þú viljir eyða þessari færslu?')) {
       request.delete(collection, id).then(function (res){
         $log.info(res);
       });
@@ -221,7 +243,6 @@ application.controller('DriverModalController', function (log, request, $scope, 
   $scope.status="";
   $scope.statusClass='alert-error';
   $scope.save = function (){
-    console.log($scope.NewDriver);
     if($scope.NewDriver !== undefined){
       $scope.selectedDriver=$scope.NewDriver;
       request.put('drivers', {name : $scope.NewDriver }).then(function (res){
@@ -249,12 +270,19 @@ application.controller('DriverModalController', function (log, request, $scope, 
 });
 
 application.controller('LogModalController', function (log, request, $scope, $modalInstance) {
-  console.log(log);
   $scope.data = log.data[log.index];
   $scope.data.consuption = ($scope.data.oil / $scope.data.km).toFixed(2);
   $scope.ok = function () {
     $modalInstance.close();
   };
+
+  request.get('select_activity_by_taeki_id/'+$scope.data.taeki_id +"?order=DESC" ).then(function(data){
+    if(data.status=='success'){
+      $scope.lastUsage = data.data[1];
+      $scope.data.km_diff = ( $scope.data.km - $scope.lastUsage.km);
+      $scope.data.oil_usage = ($scope.data.oil / $scope.data.km_diff);
+    }
+  });
 });
 
 application.directive('onlyDigits', function () {

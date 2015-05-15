@@ -54,8 +54,9 @@ module.exports = {
 				data.taeki 	= (body.taeki) 		? body.taeki.id : "";
 				data.ath 	= (body.ath) 		? body.ath : "";
 				data.title 	= (body.title) 		? body.title : "";
+				data.klst 	= (body.klst) 		? body.klst : 0;
 
-			query = "INSERT INTO activity (driver, km, notkun, state, taeki, oil, ath, title, date) VALUE (:driver,:km,:notkun,:state,:taeki,:oil,:ath,:title,FROM_UNIXTIME('"+data.date+"'))";
+			query = "INSERT INTO activity (driver, km, notkun, state, taeki, oil, ath, title, klst, date) VALUE (:driver,:km,:notkun,:state,:taeki,:oil,:ath,:title,:klst, FROM_UNIXTIME('"+data.date+"'))";
 			_root.exec(query, data, function (err, sql_data){
 				if (err){
 					callback(err);
@@ -101,8 +102,6 @@ module.exports = {
 			case 'passengers': 
 				data.name = body.name;
 				data.table = "notkun";
-
-				console.log(data.table);
 				//query = "INSERT INTO " +data.table+ "(name, ath_required) VALUES ('"+data.name+"', '"+data.ath_required+"' )"
 				//_root.exec(query, callback); 
 				callback(null, 'x');
@@ -177,7 +176,7 @@ module.exports = {
 	  			if (!q.order) {
 	  				x.order = 'DESC';
 	  			}
-	  			query = 'SELECT a.title, a.id, a.oil, a.date AS date, n.name AS notkun, a.ath, a.timestamp,  d.name AS driver,  s.name AS state, t.name AS taeki, t.id AS taeki_id, a.km FROM activity a LEFT JOIN notkun n ON a.notkun = n.id LEFT JOIN drivers d ON a.driver = d.id LEFT JOIN state s ON a.state = s.id LEFT JOIN taeki t ON a.taeki = t.id '+where+' ORDER BY a.timestamp '+x.order+' LIMIT '+x.limit+' OFFSET ' +x.offset;
+	  			query = 'SELECT a.title, a.klst, a.id, a.oil, a.date AS date, n.name AS notkun, a.ath, a.timestamp,  d.name AS driver,  s.name AS state, t.name AS taeki, t.id AS taeki_id, a.km FROM activity a LEFT JOIN notkun n ON a.notkun = n.id LEFT JOIN drivers d ON a.driver = d.id LEFT JOIN state s ON a.state = s.id LEFT JOIN taeki t ON a.taeki = t.id '+where+' ORDER BY a.timestamp '+x.order+' LIMIT '+x.limit+' OFFSET ' +x.offset;
 	  			_root.exec(query, data, function (err, sql_data){
 	  				var id;
 	  				//console.log(err, sql_data);
