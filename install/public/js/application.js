@@ -104,6 +104,7 @@ application.controller('main', function ($scope, $filter, request, $modal, $log,
   $scope.predicate = 'id';
   $scope.reverse = true;
 
+
   // $scope.$watch('selected.driver', function (NewValue, OldValue){
   //   if(NewValue == undefined) {
   //     return;
@@ -160,6 +161,23 @@ application.controller('main', function ($scope, $filter, request, $modal, $log,
       }
     });
   });
+
+  $scope.$watch('selected.km', function (_new, _old){
+    if(_new == undefined){
+      return;
+    }
+    var last_km_length = $scope.last_km_status.toString().length;
+    var current_string_length = _new.toString().length;
+    var length_needed = (last_km_length - 1 );
+    if($scope.last_km_status > 100 &&  current_string_length > length_needed ){
+      if ($scope.last_km_status > _new ){
+        $scope.km_lower = true;
+      }else{
+        $scope.km_lower=false;
+      }
+    }
+  });
+
 
 	$scope.today = function() {
 	    $scope.dt = new Date();

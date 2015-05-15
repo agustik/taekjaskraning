@@ -112,7 +112,7 @@
 				  </ui-select>
 		    </div>
 		  </div>
-		  <div class="form-group">
+		  <div class="form-group" ng-class="km_lower ? 'has-error' : ''">
 		    <label for="" class="col-sm-4 control-label">Kílometrastaða</label>
 		    <div class="col-sm-5">
 		      <input type="text" ng-model="selected.km" class="form-control" id="" placeholder="Staða mælis í kílometrum" required only-digits>
