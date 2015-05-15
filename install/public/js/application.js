@@ -166,11 +166,10 @@ application.controller('main', function ($scope, $filter, request, $modal, $log,
     if(_new == undefined || typeof $scope.last_km_status !== 'number'){
       return;
     }
-    console.log(_new);
     var last_km_length = $scope.last_km_status.toString().length;
     var current_string_length = _new.toString().length;
     var length_needed = (last_km_length - 1 );
-    if($scope.last_km_status > 100 &&  current_string_length > length_needed ){
+    if($scope.last_km_status > 100 &&  current_string_length >= length_needed ){
       if ($scope.last_km_status > _new ){
         $scope.km_lower = true;
       }else{
