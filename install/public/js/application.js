@@ -2,6 +2,8 @@ var application = angular.module('taekjaskraning', ['ngSanitize', 'ui.bootstrap'
 
 var io = io();
 
+
+
 application.filter('propsFilter', function() {
   return function(items, props) {
     var out = [];
@@ -144,6 +146,21 @@ application.controller('main', function ($scope, $filter, request, $modal, $log,
     });
   }
 
+  $scope.$watch('selected.taeki', function (_new, _old){
+    if(_new == undefined){
+      return;
+    }
+    console.log(_new, _old);
+    request.get('select_activity_by_taeki_id/'+_new.id+'?order=DESC').then(function (data){
+      if(data.status == 'success'){ 
+        if(data.data.length>0){
+          var lastUsage = data.data[0];
+          $scope.last_km_status = data.data[0].km;
+        }
+      }
+    });
+  });
+
 	$scope.today = function() {
 	    $scope.dt = new Date();
 	  };
@@ -176,6 +193,8 @@ application.controller('main', function ($scope, $filter, request, $modal, $log,
   /* Multi user select*/
   $scope.selected.selectedPassengers = {};
 });
+
+
 
 application.service('request', function ($http, $q){
 	return {
@@ -234,6 +253,8 @@ application.service('request', function ($http, $q){
   };
 });
 
+
+
 // Please note that $modalInstance represents a modal window (instance) dependency.
 // It is not the same as the $modal service used above.
 
@@ -269,6 +290,17 @@ application.controller('DriverModalController', function (log, request, $scope, 
   };
 });
 
+function FindPrevUsage(array, obj){
+  // find the index of current id;
+  var output;
+  angular.forEach(array, function (value, key){
+    if(value.activity_id == obj.id){
+      output=  array[key +1];
+    }
+  });
+  return output;
+}
+
 application.controller('LogModalController', function (log, request, $scope, $modalInstance) {
   $scope.data = log.data[log.index];
   $scope.data.consuption = ($scope.data.oil / $scope.data.km).toFixed(2);
@@ -278,7 +310,7 @@ application.controller('LogModalController', function (log, request, $scope, $mo
 
   request.get('select_activity_by_taeki_id/'+$scope.data.taeki_id +"?order=DESC" ).then(function(data){
     if(data.status=='success'){
-      $scope.lastUsage = data.data[1];
+      $scope.lastUsage = FindPrevUsage(data.data, $scope.data);
       $scope.data.km_diff = ( $scope.data.km - $scope.lastUsage.km);
       $scope.data.oil_usage = ($scope.data.oil / $scope.data.km_diff);
     }

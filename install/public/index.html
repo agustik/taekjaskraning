@@ -108,8 +108,12 @@
 		  </div>
 		  <div class="form-group">
 		    <label for="" class="col-sm-4 control-label">Kílometrastaða</label>
-		    <div class="col-sm-8">
+		    <div class="col-sm-5">
 		      <input type="text" ng-model="selected.km" class="form-control" id="" placeholder="Staða mælis í kílometrum" required only-digits>
+		    </div>
+		    <div class="col-sm-3">
+		    	<label class="control-label"><span ng-show="(last_km_status > 100)">Síðast: {{last_km_status}}</span></label class="control-label">
+		      <!-- <input type="text"  class="form-control" id="" value="100115 km" disabled> -->
 		    </div>
 		  </div>
 		  
@@ -155,10 +159,10 @@
 		      </select>
 		    </div>
 		  </div>
-		  <div class="form-group" ng-class="selected.state.name == 'Bilað' ? 'has-error' : '' ">
+		  <div class="form-group" ng-class="selected.state.name == 'Bilað' ? 'has-error' : '' || selected.notkun.name == 'Annað' ? 'has-error' : '' ">
 		    <label for="" class="col-sm-4 control-label">Athugasemdir</label>
 		    <div class="col-sm-8">
-		      <textarea ng-model="selected.ath" class="form-control" rows="3" ng-requred="(selected.state.name=='Bilað')"></textarea>
+		      <textarea ng-model="selected.ath" class="form-control" rows="3" ng-requred="(selected.state.name=='Bilað' || selected.notkun.name == 'Annað')"></textarea>
 		    </div>
 		  </div>
 		  <div class="form-group">
