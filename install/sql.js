@@ -167,7 +167,7 @@ module.exports = {
 		};
 		var x = {
 			offset : _root._select_query_attrs(((q.offset) ? q.offset : 0), 'int'),
-			limit  : _root._select_query_attrs(((q.limit) ? q.limit : 20), 'int'),
+			limit  : _root._select_query_attrs(((q.limit) ? q.limit : 100), 'int'),
 			order  : _root._select_query_attrs(((q.order) ? q.order : 'ASC') , ['asc','desc'])
 		};
 
@@ -188,9 +188,6 @@ module.exports = {
 	  		break;
 			case 'activity':
 	  			table = "activity";
-	  			if (x.limit == 20){
-	  				x.limit = 100;
-	  			}
 	  			if (id) {
 	  				where = "WHERE a.id = " + id;
 	  			}
