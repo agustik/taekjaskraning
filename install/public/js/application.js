@@ -166,6 +166,7 @@ application.controller('main', function ($scope, $filter, request, $modal, $log,
     if(_new == undefined || typeof _new !== 'number'){
       return;
     }
+    console.log(_new);
     var last_km_length = $scope.last_km_status.toString().length;
     var current_string_length = _new.toString().length;
     var length_needed = (last_km_length - 1 );
