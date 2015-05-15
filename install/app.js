@@ -67,10 +67,10 @@ app.put('/api/:command', function (req, res) {
 			response.message=error;
 			res.statusCode = 500;
 		}else{
-			io.emit('update', { name: req.params.command, data: body, row_id : data.insertId });
+			io.emit('update', { name: req.params.command, data: body, row_id : data.activity.insertId });
 			response.status='success';
 			response.data=body;
-			response.data.$$row_id=data.insertId;
+			response.data.$$row_id=data.activity.insertId;
 		}
 		res.send(response);
 	});

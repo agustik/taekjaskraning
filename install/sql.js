@@ -41,13 +41,14 @@ module.exports = {
 	insert : function (command, body, callback){
 		var data = {};
 		var _root = this;
+		var report = {};
 		var id;
 		switch (command) {
 			case 'activity':
 				data.date 	= (body.date) 		? body.date : "";
 				data.driver = (body.driver) 	? body.driver.id : "";
 				data.km 	= (body.km) 		? body.km : "";
-				data.notkun = (body.notkun) 	? body.notkun.id : "";
+				data.notkun = (body.notkun) 	? body.notkun.id : [];
 				data.oil 	= (body.oil) 		? body.oil : "";
 				data.other 	= (body.other) 		? body.other : "";
 				data.state 	= (body.state) 		? body.state.id : "";
@@ -56,18 +57,38 @@ module.exports = {
 				data.title 	= (body.title) 		? body.title : "";
 				data.klst 	= (body.klst) 		? body.klst : 0;
 
-			query = "INSERT INTO activity (driver, km, notkun, state, taeki, oil, ath, title, klst, date) VALUE (:driver,:km,:notkun,:state,:taeki,:oil,:ath,:title,:klst, FROM_UNIXTIME('"+data.date+"'))";
+			query = "INSERT INTO activity (driver, km, state, taeki, oil, ath, title, klst, date) VALUE (:driver,:km,:state,:taeki,:oil,:ath,:title,:klst, FROM_UNIXTIME('"+data.date+"'))";
 			_root.exec(query, data, function (err, sql_data){
 				if (err){
 					callback(err);
 				}else{
+					report.activity = sql_data;
 					var id = sql_data.insertId;
 					var l = body.selectedPassengers.length -1;
 					body.selectedPassengers.forEach(function (value, key){
-						var obj = { user_id : value.id, activity_id : id };
 						_root.exec("INSERT INTO user_activity (user_id, activity_id) VALUE (:user_id, :activity_id)", { user_id : value.id, activity_id : id }, function (err, sql_data_1){
+							if(err){
+								callback(err);
+							}
 							if(key == l) {
-								callback(err, sql_data);
+								report.user_activity = [];
+								report.user_activity.push(sql_data_1);
+								var n_length = body.notkun.length - 1;
+								body.notkun.forEach(function (v,k){
+									_root.exec("INSERT INTO notkun_activity (activity_id, notkun_id ) VALUE (:activity_id, :notkun_id)", {activity_id : id, notkun_id:value.id }, function (err, sql_data_2){
+										report.notkun_activity = [];
+										console.log('###????');
+										report.notkun_activity.push(sql_data_2);
+										if (err){
+											callback(err);
+										}else{
+											if(k == n_length ){
+												report.notkun_activity = sql_data_2;
+												callback(err, report);
+											}
+										}
+									});
+								})
 							}
 						});	
 					});
@@ -185,17 +206,24 @@ module.exports = {
 	  					callback(err);
 	  				}else{
 	  					sql_data.forEach(function (row, i){
-	  						var data = {
-	  							activity_id : row.id
-	  						};
-	  						_root.exec("SELECT * FROM `user_activity` ua LEFT JOIN drivers d ON ua.user_id=d.id WHERE activity_id=:activity_id", data, function (err_1, sql_data_1){
+	  						_root.exec("SELECT * FROM `user_activity` ua LEFT JOIN drivers d ON ua.user_id=d.id WHERE activity_id=:activity_id", {activity_id : row.id }, function (err_1, sql_data_1){
 	  							if (err_1){
 	  								callback(err_1);
 	  							}else{
 	  								sql_data[i].passengers=sql_data_1;
-	  								if( i ==sql_data.length -1 ){
-	  									callback(err, sql_data);
-	  								}
+	  								//if( i ==sql_data.length -1 ){
+  									_root.exec("SELECT * FROM `notkun_activity` na LEFT JOIN notkun n ON na.notkun_id=n.id WHERE activity_id=:activity_id", {activity_id : row.id}, function (err_2, sql_data_2){
+			  							if (err_2){
+			  								callback(err_2);
+			  							}else{
+			  								sql_data[i].notkun=sql_data_2;
+			  								if( i ==sql_data.length -1 ){
+			  									
+			  									callback(err, sql_data);
+			  								}
+			  							}
+			  						});
+	  								//}
 	  							}
 	  						});
 	  						

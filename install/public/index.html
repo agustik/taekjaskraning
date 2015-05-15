@@ -64,7 +64,7 @@
 		    <div class="col-md-8">
 		    	<div class="input-group">
 
-		   	<ui-select ng-model="selected.driver" theme="bootstrap">
+		   	<ui-select ng-model="selected.driver" theme="bootstrap"  ng-required="true">
               <ui-select-match placeholder="Ökumaður">{{$select.selected.name}}</ui-select-match>
               <ui-select-choices repeat="item in drivers | filter: $select.search">
                 <span ng-bind-html="item.name | highlight: $select.search"></span>
@@ -86,7 +86,7 @@
 		    <label for="" class="col-sm-4 control-label">Dags</label>
 		    <div class="col-sm-8">
 		       <p class="input-group">
-              <input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="dt" is-open="opened"  datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Loka" />
+              <input ng-focus="UpdateDate()" type="text" class="form-control" datepicker-popup="{{format}}" ng-model="dt" is-open="opened"  datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Loka" />
               <span class="input-group-btn">
                 <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
               </span>
@@ -102,8 +102,14 @@
 		  <div class="form-group">
 		    <label for="notkun" class="col-sm-4 control-label">Notkunarflokkur</label>
 		    <div class="col-sm-8">
-		      <select id="notkun"  class="form-control" ng-model="selected.notkun" ng-options="item.name for item in notkun | orderBy:'name':false">
-		      </select>
+		      <!-- <select id="notkun"  class="form-control" ng-model="selected.notkun" ng-options="item.name for item in notkun | orderBy:'name':false">
+		      </select> -->
+		      <ui-select multiple ng-model="selected.notkun" theme="bootstrap" ng-disabled="disabled" >
+				    <ui-select-match placeholder="Veldu notkunarflokk, t.d Undanfarar og Tækjaflokkur">{{$item.name}} </ui-select-match>
+				    <ui-select-choices repeat="item in notkun | propsFilter: {name: $select.search}">
+				      <div ng-bind-html="item.name | highlight: $select.search"></div>
+				    </ui-select-choices>
+				  </ui-select>
 		    </div>
 		  </div>
 		  <div class="form-group">
@@ -167,10 +173,11 @@
 		  </div>
 		  <div class="form-group">
 		    <div class="col-sm-offset-2 col-sm-10">
-		      <button type="submit" class="btn btn-default">Skrá</button>
+		      <button type="submit" class="btn btn-default" ng-disable="submitting">Skrá</button>
 		    </div>
 		  </div>
 		</form>
+		<div class="alert alert-danger" ng-show="error">{{error}}</div>
 	  </div>
 	  <div class="col-md-6 ">
 	  	<div>

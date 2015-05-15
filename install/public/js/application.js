@@ -166,20 +166,38 @@ application.controller('main', function ($scope, $filter, request, $modal, $log,
 	  };
 	  $scope.today();
 
+
 	$scope.open = function($event) {
+      $scope.dt = new Date();
 	    $event.preventDefault();
 	    $event.stopPropagation();
 	    $scope.opened = true;
 	  };
 
-  $scope.format = "dd.MM.yyyy";
+  $scope.UpdateDate = function (){
+    $scope.dt = new Date();
+  }
+
+  $scope.format = "HH:mm dd.MM.yyyy";
+  $scope.error = false;
+  $scope.submitting=false;
   $scope.submit = function (){
-  	$scope.selected.date = Date.parse($scope.dt) / 1000;
-  	request.put('activity', $scope.selected).then(function (data){
-      if (data.status == "success") {
-        CleanForm();
-      }
-    })
+    $scope.submitting=true;
+    $log.info('Sumit');
+    if ($scope.selected.driver == undefined){
+      $scope.error = 'Bílstjóri ekki valinn!';
+    }else{
+      $scope.error = false;
+    	$scope.selected.date = Date.parse($scope.dt) / 1000;
+    	request.put('activity', $scope.selected).then(function (data){
+        $scope.submitting=false;
+        if (data.status == "success") {
+          CleanForm();
+        }else{
+          $scope.error = data.message;
+        }
+      })
+    }
   };
 
   $scope.delete = function (collection, id){
