@@ -29,9 +29,9 @@ app.get('/api/:command', function (req, res) {
 		status : 'fail'
 	};
 	//io.emit('select', req.params.command);
-	sql.select(req.params.command,false, function (err, data){
+	sql.select(req.params.command, false, req.query,  function (err, data){
 		if(err){
-			response.statusCode=500;
+			res.statusCode=500;
 			response.message = err;
 		}else{
 			response.status='success';
@@ -45,9 +45,9 @@ app.get('/api/:command/:id', function (req, res) {
 	var response = {
 		status : 'fail'
 	};
-	sql.select(req.params.command, req.params.id, function (err, data){
+	sql.select(req.params.command, req.params.id, req.query, function (err, data){
 		if(err){
-			response.statusCode=500;
+			res.statusCode=500;
 			response.message = err;
 		}else{
 			response.status='success';
@@ -67,7 +67,6 @@ app.put('/api/:command', function (req, res) {
 			response.message=error;
 			res.statusCode = 500;
 		}else{
-			console.log('returned id : ', data.insertId);
 			io.emit('update', { name: req.params.command, data: body, row_id : data.insertId });
 			response.status='success';
 			response.data=body;
@@ -85,6 +84,7 @@ app.delete('/api/:command/:id', function (req, res){
 	}
 	sql.delete(command, id, function (err, data){
 		if (err){
+			res.statusCode=500;
 			response.message = err;
 		}else{
 			response.status="success";

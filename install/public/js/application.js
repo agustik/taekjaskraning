@@ -2,13 +2,6 @@ var application = angular.module('taekjaskraning', ['ngSanitize', 'ui.bootstrap'
 
 var io = io();
 
-// Emit ready event.
-// io.emit('activity','mjeeee'); 
-
-// // Listen for the talk event.
-// io.on('activity', function(data) {
-//     console.log(data)
-// });
 application.filter('propsFilter', function() {
   return function(items, props) {
     var out = [];
@@ -54,7 +47,6 @@ application.controller('main', function ($scope, request, $modal, $log, $interva
             data : $scope.activity,
             index : index
           } 
-            
         }
       }
     });
@@ -119,6 +111,16 @@ application.controller('main', function ($scope, request, $modal, $log, $interva
     });
   }
 
+  function CleanForm(){
+    angular.forEach($scope.selected, function (value, key){
+      if($scope.hasOwnProperty(key)){
+        $scope.selected[key] = $scope[key][0];
+      }else{
+        $scope.selected[key] = "";
+      }
+    });
+  }
+
 	$scope.today = function() {
 	    $scope.dt = new Date();
 	  };
@@ -134,7 +136,11 @@ application.controller('main', function ($scope, request, $modal, $log, $interva
   $scope.submit = function (){
     console.log('submit ? ');
   	$scope.selected.date = Date.parse($scope.dt) / 1000;
-  	request.put('activity', $scope.selected);
+  	request.put('activity', $scope.selected).then(function (data){
+      if (data.status == "success") {
+        CleanForm();
+      }
+    })
   };
 
   $scope.delete = function (collection, id){
@@ -252,23 +258,23 @@ application.controller('LogModalController', function (log, request, $scope, $mo
 });
 
 application.directive('onlyDigits', function () {
-    return {
-      require: 'ngModel',
-      restrict: 'A',
-      link: function (scope, element, attr, ctrl) {
-        function inputValue(val) {
-          if (val) {
-            var digits = val.replace(/[^0-9]/g, '');
+  return {
+    require: 'ngModel',
+    restrict: 'A',
+    link: function (scope, element, attr, ctrl) {
+      function inputValue(val) {
+        if (val) {
+          var digits = val.replace(/[^0-9]/g, '');
 
-            if (digits !== val) {
-              ctrl.$setViewValue(digits);
-              ctrl.$render();
-            }
-            return parseInt(digits,10);
+          if (digits !== val) {
+            ctrl.$setViewValue(digits);
+            ctrl.$render();
           }
-          return undefined;
-        }            
-        ctrl.$parsers.push(inputValue);
-      }
-    };
-   });
+          return parseInt(digits,10);
+        }
+        return undefined;
+      }            
+      ctrl.$parsers.push(inputValue);
+    }
+  };
+ });
