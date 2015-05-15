@@ -75,7 +75,7 @@ module.exports = {
 								report.user_activity.push(sql_data_1);
 								var n_length = body.notkun.length - 1;
 								body.notkun.forEach(function (v,k){
-									_root.exec("INSERT INTO notkun_activity (activity_id, notkun_id ) VALUE (:activity_id, :notkun_id)", {activity_id : id, notkun_id:value.id }, function (err, sql_data_2){
+									_root.exec("INSERT INTO notkun_activity (activity_id, notkun_id ) VALUE (:activity_id, :notkun_id)", {activity_id : id, notkun_id:v.id }, function (err, sql_data_2){
 										report.notkun_activity = [];
 										console.log('###????');
 										report.notkun_activity.push(sql_data_2);
