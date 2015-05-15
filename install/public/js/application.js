@@ -163,7 +163,7 @@ application.controller('main', function ($scope, $filter, request, $modal, $log,
   });
 
   $scope.$watch('selected.km', function (_new, _old){
-    if(_new == undefined){
+    if(_new == undefined || typeof _new !== 'number'){
       return;
     }
     var last_km_length = $scope.last_km_status.toString().length;
