@@ -203,10 +203,18 @@
 		      	<p>
 		      		<strong>Km eknir:</strong> {{ log.km }}
 		      	</p>
+		      	<p>
 		  		<strong>Björgunarmenn:</strong><span ng-repeat="passenger in log.passengers">
 			  		<span class="label label-primary">{{ passenger.name }}
 			  		</span>&nbsp;
 			  	</span>
+		      	</p>
+			  	<p>
+			  	<strong>Notkunarflokkur:</strong><span ng-repeat="item in log.notkun">
+			  		<span class="label label-success">{{ item.name }}
+			  		</span>&nbsp;
+			  	</span>
+			  	</p>
 				<p>
 					<strong>Athugasemnd:</strong> {{ log.ath }}	
 				</p>
