@@ -102,7 +102,7 @@ application.controller('main', function ($scope, $filter, request, $modal, $log,
     DeleteObjectFromScopeById(data.name, data.id);
   });
   $scope.predicate = 'id';
-  $scope.reverse = true;
+  $scope.reverse = false;
 
 
   // $scope.$watch('selected.driver', function (NewValue, OldValue){
@@ -192,11 +192,8 @@ application.controller('main', function ($scope, $filter, request, $modal, $log,
 	    $scope.opened = true;
 	  };
 
-  $scope.UpdateDate = function (){
-    $scope.dt = new Date();
-  }
 
-  $scope.format = "HH:mm dd.MM.yyyy";
+  $scope.format = "dd.MM.yyyy";
   $scope.error = false;
   $scope.submitting=false;
   $scope.submit = function (){

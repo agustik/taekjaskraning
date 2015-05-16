@@ -45,7 +45,7 @@
 <div class="container-fluid" ng-controller="main">
 	<div class="row">
 	  <div class="col-md-6">
-		<form class="form-horizontal" role="form" ng-submit="submit()">
+		<form class="form-horizontal" role="form" >
 		  <div class="form-group">
 		    <label for="taeki" class="col-sm-4 control-label">Tæki</label>
 		    <div class="col-sm-8">
@@ -86,7 +86,7 @@
 		    <label for="" class="col-sm-4 control-label">Dags</label>
 		    <div class="col-sm-8">
 		       <p class="input-group">
-              <input ng-focus="UpdateDate()" type="text" class="form-control" datepicker-popup="{{format}}" ng-model="dt" is-open="opened"  datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Loka" />
+              <input  type="text" class="form-control" datepicker-popup="{{format}}" ng-model="dt" is-open="opened"  datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Loka" />
               <span class="input-group-btn">
                 <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
               </span>
@@ -173,7 +173,7 @@
 		  </div>
 		  <div class="form-group">
 		    <div class="col-sm-offset-2 col-sm-10">
-		      <button type="submit" class="btn btn-default" ng-disable="submitting">Skrá</button>
+		      <a href="#" class="btn btn-default" ng-click="submit()" ng-disabled="submitting">Skrá</a>
 		    </div>
 		  </div>
 		</form>
@@ -188,7 +188,7 @@
 		    <h3 class="panel-title">Notkun</h3>
 		  </div>
 		  <div class="panel-body" id="mainbody">
-    	  	<div class="panel" ng-class="{true : 'panel-primary', false:'panel-danger'}[log.state == 'Í lagi']" role="alert" ng-repeat="(i, log) in activity | orderBy:predicate:reverse | filter:search">
+    	  	<div class="panel" ng-class="{true : 'panel-primary', false:'panel-danger'}[log.state == 'Í lagi']" role="alert" ng-repeat="(i, log) in activity track by $index | orderBy:predicate:reverse | filter:search">
     	  		<div class="panel-heading">
     	  			<div class="btn-group pull-right">
 				        <a href="#" class="btn btn-default btn-xs" ng-click="openmodal('lg', 'view-log.html','LogModalController', i)">Skoða</a>
@@ -238,9 +238,5 @@
 <script src="js/ui-bootstrap-tpls-0.11.2.min.js"></script>
 <script src="https://cdn.socket.io/socket.io-1.1.0.js"></script>
 <script src="js/application.js"></script>
-<script type="text/javascript">
-	
-	       
-</script>
 </body>
 </html>
