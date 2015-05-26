@@ -240,7 +240,7 @@ module.exports = {
 			case 'select_activity_by_taeki_id':
 	  			table = "activity";
 
-	  			query = 'SELECT a.id AS activity_id, a.state, a.timestamp AS activity_timestamp, a.ath, t.name, a.km, a.oil, a.date, t.id AS taeki_id FROM activity a LEFT JOIN taeki t ON t.id=a.taeki WHERE t.id='+id+' ORDER BY a.id ' + x.order + ' LIMIT ' +x.limit+' OFFSET '+ x.offset;
+	  			query = 'SELECT a.id AS activity_id, a.state, a.timestamp AS activity_timestamp, a.ath, t.name, a.km, a.oil, a.date, t.id AS taeki_id FROM activity a LEFT JOIN taeki t ON t.id=a.taeki WHERE t.id='+id+' ORDER BY a.timestamp ' + x.order + ' LIMIT ' +x.limit+' OFFSET '+ x.offset;
 	  			_root.exec(query, data, callback); 
 	  			return;
 	  		break;
