@@ -13,8 +13,9 @@ module.exports = {
 	  		}.bind(this));
 		};
         if (err) {
-        	callback(err);
+            
             console.error('CONNECTION error: ',err);
+        	callback(err);
         } else {
             connection.query(query, values, function(err, rows, fields) {
              	connection.release();
@@ -48,7 +49,7 @@ module.exports = {
 				data.date 	= (body.date) 		? body.date : "";
 				data.driver = (body.driver) 	? body.driver.id : "";
 				data.km 	= (body.km) 		? body.km : "";
-				data.notkun = (body.notkun) 	? body.notkun.id : [];
+				data.notkun = 0;
 				data.oil 	= (body.oil) 		? body.oil : "";
 				data.other 	= (body.other) 		? body.other : "";
 				data.state 	= (body.state) 		? body.state.id : "";
@@ -57,11 +58,12 @@ module.exports = {
 				data.title 	= (body.title) 		? body.title : "";
 				data.klst 	= (body.klst) 		? body.klst : 0;
 
-			query = "INSERT INTO activity (driver, km, state, taeki, oil, ath, title, klst, date) VALUE (:driver,:km,:state,:taeki,:oil,:ath,:title,:klst, FROM_UNIXTIME('"+data.date+"'))";
+			query = "INSERT INTO activity (driver, km, state, taeki, oil, ath, title, klst, date, notkun) VALUE (:driver, :km, :state, :taeki, :oil, :ath, :title, :klst, FROM_UNIXTIME('"+data.date+"'), :notkun)";
 			_root.exec(query, data, function (err, sql_data){
 				if (err){
 					callback(err);
 				}else{
+                    report.insertId = sql_data.insertId;
 					report.activity = sql_data;
 					var id = sql_data.insertId;
 					var l = body.selectedPassengers.length -1;
@@ -77,7 +79,6 @@ module.exports = {
 								body.notkun.forEach(function (v,k){
 									_root.exec("INSERT INTO notkun_activity (activity_id, notkun_id ) VALUE (:activity_id, :notkun_id)", {activity_id : id, notkun_id:v.id }, function (err, sql_data_2){
 										report.notkun_activity = [];
-										console.log('###????');
 										report.notkun_activity.push(sql_data_2);
 										if (err){
 											callback(err);
@@ -98,7 +99,7 @@ module.exports = {
 			break;
 			case 'drivers':
 				data.name = body.name;
-				
+				data.description = '';
 				_root.exec("SELECT * FROM drivers WHERE name=:name LIMIT 1", data, function (err, sql_data){
 					if(err){
 						callback(err);
@@ -106,7 +107,7 @@ module.exports = {
 						if (sql_data.length > 0){
 							callback('Villa!: Notandi þegar til');
 						}else{
-							query = "INSERT INTO drivers (name) VALUES (:name)";
+							query = "INSERT INTO drivers (name, description) VALUES ( :name, :description )";
 							_root.exec(query, data, callback);
 						}
 

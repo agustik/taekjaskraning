@@ -101,8 +101,8 @@ application.controller('main', function ($scope, $filter, request, $modal, $log,
   io.on('delete', function(data) {
     DeleteObjectFromScopeById(data.name, data.id);
   });
-  $scope.predicate = 'id';
-  $scope.reverse = false;
+  $scope.predicate = 'timestamp';
+  $scope.reverse = true;
 
 
   // $scope.$watch('selected.driver', function (NewValue, OldValue){
@@ -151,8 +151,11 @@ application.controller('main', function ($scope, $filter, request, $modal, $log,
     if(_new == undefined){
       return;
     }
-    console.log(_new, _old);
-    request.get('select_activity_by_taeki_id/'+_new.id+'?order=DESC').then(function (data){
+     FetchtaekiStatus(_new.id);
+   });
+
+  function FetchtaekiStatus(id){
+    request.get('select_activity_by_taeki_id/'+id+'?order=DESC').then(function (data){
       if(data.status == 'success'){ 
         if(data.data.length>0){
           var lastUsage = data.data[0];
@@ -160,7 +163,9 @@ application.controller('main', function ($scope, $filter, request, $modal, $log,
         }
       }
     });
-  });
+
+  }
+
 
   $scope.$watch('selected.km', function (_new, _old){
     if(_new == undefined || typeof $scope.last_km_status !== 'number'){
@@ -207,6 +212,7 @@ application.controller('main', function ($scope, $filter, request, $modal, $log,
     	request.put('activity', $scope.selected).then(function (data){
         $scope.submitting=false;
         if (data.status == "success") {
+          FetchtaekiStatus($scope.selected.taeki.id);
           CleanForm();
         }else{
           $scope.error = data.message;
