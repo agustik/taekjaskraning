@@ -1,8 +1,8 @@
 {
  "mysql" : {
- 	"host"     : "slxhutdev1.lsh.is",
+ 	"host"     : "localhost",
     "user"     : "taekjaskraning",
-    "password" : "7sJU5JP2YFxNR5Su",
+    "password" : "AwesomeHugePassword",
     "database" : "taekjaskraning"
  }
 }

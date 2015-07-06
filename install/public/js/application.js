@@ -72,7 +72,7 @@ application.controller('main', function ($scope, $filter, request, $modal, $log,
   $scope.state=[];
   $scope.activity=[];
   $scope.AvailableUsers=[];
-  var requests = ['taeki', 'notkun', 'drivers', 'state', 'activity'];
+  var requests = ['taeki', 'notkun', 'drivers', 'state', 'activity', 'version'];
 
   requests.forEach(function (key){
     request.get(key).then(function (res) {
@@ -96,6 +96,17 @@ application.controller('main', function ($scope, $filter, request, $modal, $log,
         $scope[ws.name].push(res.data[0]);
       }
     })
+  });
+
+  io.on('notify', function(data) {
+    if(data.event=='restart'){
+     if ($scope.version.version !== data.version) {
+      var c = confirm('Þjónn endurræstist, til að tryggja að allt virki endurhladdu (refresh) vefvafrann');
+      if(c){
+        location.reload();
+      }
+     }
+    }
   });
 
   io.on('delete', function(data) {
